@@ -449,32 +449,33 @@ export async function connectToWhatsApp(): Promise<{
   });
 }
 
-export async function toggleBackup(
-  chatId: string
-): Promise<{ status: string }> {
-  const chat = await prisma.chat.findFirst({
-    where: { chatId },
-  });
-  if (chat) {
-    await prisma.chat.update({
-      where: { id: chat.id },
-      data: { backup: !chat.backup },
-    });
-  } else {
-    await prisma.chat.create({
-      data: {
-        chatId: chatId,
-        nameContact: chatId,
-        backup: true,
-        message: "",
-        pesanPrivate: true,
-        timestamp: new Date(),
-        messageType: "text",
-      },
-    });
-  }
-  return { status: "Status backup diubah" };
-}
+// export async function toggleBackup(
+//   chatId: string
+// ): Promise<{ status: string }> {
+//   const chat = await prisma.chat.findFirst({
+//     where: { chatId },
+//   });
+//   if (chat) {
+//     await prisma.chat.update({
+//       where: { id: chat.id },
+//       data: { backup: !chat.backup },
+//     });
+//   } else {
+//     await prisma.chat.create({
+//       data: {
+//         chatId: chatId,
+//         nameContact: chatId,
+//         backup: true,
+//         message: "",
+//         pesanPrivate: true,
+//         timestamp: new Date(),
+//         messageType: "text",
+//       },
+//     });
+//   }
+//   return { status: "Status backup diubah" };
+// }
+
 async function getMessage(
   key: WAMessageKey
 ): Promise<WAMessageContent | undefined> {
