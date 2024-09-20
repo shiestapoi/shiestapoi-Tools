@@ -5,7 +5,7 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-# wa-logs.txt
+wa-logs.txt
 baileys_store_multi.json
 /auth_info
 # testing

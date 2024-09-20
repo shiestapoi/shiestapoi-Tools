@@ -46,8 +46,7 @@ fs.mkdir(path.dirname(logFilePath), { recursive: true })
   });
 
 const logger = P(
-  { timestamp: () => `,"time":"${new Date().toJSON()}"` },
-  P.destination(logFilePath)
+  { timestamp: () => `,"time":"${new Date().toJSON()}"` }
 );
 logger.level = "trace";
 const msgRetryCounterCache = new NodeCache();
