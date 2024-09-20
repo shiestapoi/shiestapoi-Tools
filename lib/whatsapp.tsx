@@ -29,20 +29,21 @@ import { smsg } from "./myFunc";
 
 const logFilePath = './temp/wa-logs.txt';
 
-// Pastikan file log ada sebelum membuat logger
-try {
-  fs.access(logFilePath, fs.constants.F_OK).then(() => {
-    console.log('File log ada');
-  }).catch((err) => {
-    console.log('File log tidak ada, membuat file kosong');
-    fs.writeFile(logFilePath, '').catch((err) => {
-      console.error('Gagal membuat file log:', err);
-    });
+// Pastikan direktori temp ada
+fs.mkdir(path.dirname(logFilePath), { recursive: true })
+  .then(() => {
+    // Baca file log jika ada
+    fs.access(logFilePath, fs.constants.F_OK)
+      .then(() => {
+        console.log('File log ada');
+      })
+      .catch(() => {
+        console.log('File log tidak ada, akan dibuat saat penyimpanan pertama');
+      });
+  })
+  .catch((err) => {
+    console.error('Gagal membuat direktori temp:', err);
   });
-} catch (err) {
-  // Jika file tidak ada, buat file kosong
-  fs.writeFile(logFilePath, '');
-}
 
 const logger = P(
   { timestamp: () => `,"time":"${new Date().toJSON()}"` },
