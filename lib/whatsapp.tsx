@@ -29,7 +29,7 @@ import { smsg } from "./myFunc";
 
 const logger = P(
   { timestamp: () => `,"time":"${new Date().toJSON()}"` },
-  P.destination("./wa-logs.txt")
+  P.destination("./temp/wa-logs.txt")
 );
 logger.level = "trace";
 const msgRetryCounterCache = new NodeCache();
@@ -39,10 +39,10 @@ export const whatsappEmitter = new EventEmitter();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let sock: any;
 const store = makeInMemoryStore({ logger });
-store?.readFromFile("./baileys_store_multi.json");
+store?.readFromFile("./temp/baileys_store_multi.json");
 // save every 10s
 setInterval(() => {
-  store?.writeToFile("./baileys_store_multi.json");
+  store?.writeToFile("./temp/baileys_store_multi.json");
 }, 10_000);
 
 async function deleteAuthInfo() {
@@ -218,8 +218,9 @@ export async function connectToWhatsApp(): Promise<{
             } else {
               namefolder = 'temp'
             }
-            const locationFile = `/public/whatsapp/media/${namefolder}/${m.id}${number}.${mimetype}`;
-            const absoluteFilePath = path.join(process.cwd(), locationFile);
+            const locationFile = `/whatsapp/media/${namefolder}/${m.id}${number}.${mimetype}`;
+            const absoluteFilePath = path.join(process.cwd(), "public", locationFile);
+            console.log(absoluteFilePath)
             const dirPath = path.dirname(absoluteFilePath);
             await fs.mkdir(dirPath, { recursive: true });
             fs.writeFile(absoluteFilePath, buffer)
@@ -278,8 +279,8 @@ export async function connectToWhatsApp(): Promise<{
                 } else {
                   namefolder = 'temp'
                 }
-                const locationFile = `/public/whatsapp/media/${namefolder}/${m.id}${number}.${mimetype}`;
-                const absoluteFilePath = path.join(process.cwd(), locationFile);
+                const locationFile = `/whatsapp/media/${namefolder}/${m.id}${number}.${mimetype}`;
+                const absoluteFilePath = path.join(process.cwd(), "public", locationFile);
                 const dirPath = path.dirname(absoluteFilePath);
                 await fs.mkdir(dirPath, { recursive: true });
                 fs.writeFile(absoluteFilePath, buffer)
@@ -337,8 +338,8 @@ export async function connectToWhatsApp(): Promise<{
                 } else {
                   namefolder = 'temp'
                 }
-                const locationFile = `/public/whatsapp/media/${namefolder}/${m.id}${number}.${mimetype}`;
-                const absoluteFilePath = path.join(process.cwd(), locationFile);
+                const locationFile = `/whatsapp/media/${namefolder}/${m.id}${number}.${mimetype}`;
+                const absoluteFilePath = path.join(process.cwd(), "public", locationFile);
                 const dirPath = path.dirname(absoluteFilePath);
                 await fs.mkdir(dirPath, { recursive: true });
                 fs.writeFile(absoluteFilePath, buffer)
@@ -374,8 +375,8 @@ export async function connectToWhatsApp(): Promise<{
               )
               const sender = m.sender;
               const number = sender.split('@')[0];
-              const locationFile = `/public/whatsapp/media/document/${m.message.documentWithCaptionMessage.message.documentMessage.fileName}`;
-              const absoluteFilePath = path.join(process.cwd(), locationFile);
+              const locationFile = `/whatsapp/media/document/${m.message.documentWithCaptionMessage.message.documentMessage.fileName}`;
+              const absoluteFilePath = path.join(process.cwd(), "public", locationFile);
               const dirPath = path.dirname(absoluteFilePath);
               await fs.mkdir(dirPath, { recursive: true });
               fs.writeFile(absoluteFilePath, buffer)

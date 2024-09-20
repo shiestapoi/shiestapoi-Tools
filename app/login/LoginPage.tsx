@@ -137,6 +137,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 value={email}
+                disabled={isLoading ? true : false}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100"
                 placeholder="Masukkan email Anda"
