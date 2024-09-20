@@ -8,6 +8,7 @@
 wa-logs.txt
 baileys_store_multi.json
 /auth_info
+/temp
 # testing
 /coverage
 /public/whatsapp

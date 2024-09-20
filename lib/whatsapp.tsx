@@ -27,9 +27,26 @@ import makeWASocket, {
 import chalk from "chalk";
 import { smsg } from "./myFunc";
 
+const logFilePath = './temp/wa-logs.txt';
+
+// Pastikan file log ada sebelum membuat logger
+try {
+  fs.access(logFilePath, fs.constants.F_OK).then(() => {
+    console.log('File log ada');
+  }).catch((err) => {
+    console.log('File log tidak ada, membuat file kosong');
+    fs.writeFile(logFilePath, '').catch((err) => {
+      console.error('Gagal membuat file log:', err);
+    });
+  });
+} catch (err) {
+  // Jika file tidak ada, buat file kosong
+  fs.writeFile(logFilePath, '');
+}
+
 const logger = P(
   { timestamp: () => `,"time":"${new Date().toJSON()}"` },
-  P.destination("./temp/wa-logs.txt")
+  P.destination(logFilePath)
 );
 logger.level = "trace";
 const msgRetryCounterCache = new NodeCache();
@@ -39,11 +56,28 @@ export const whatsappEmitter = new EventEmitter();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let sock: any;
 const store = makeInMemoryStore({ logger });
-store?.readFromFile("./temp/baileys_store_multi.json");
-// save every 10s
-setInterval(() => {
-  store?.writeToFile("./temp/baileys_store_multi.json");
-}, 10_000);
+const storeFilePath = "./temp/baileys_store_multi.json";
+
+// Pastikan direktori temp ada
+fs.mkdir(path.dirname(storeFilePath), { recursive: true })
+  .then(() => {
+    // Baca file store jika ada
+    fs.access(storeFilePath, fs.constants.F_OK)
+      .then(() => {
+        store?.readFromFile(storeFilePath);
+      })
+      .catch(() => {
+        console.log('File store tidak ada, akan dibuat saat penyimpanan pertama');
+      });
+
+    // Simpan setiap 10 detik
+    setInterval(() => {
+      store?.writeToFile(storeFilePath);
+    }, 10_000);
+  })
+  .catch((err) => {
+    console.error('Gagal membuat direktori temp:', err);
+  });
 
 async function deleteAuthInfo() {
   try {
