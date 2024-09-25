@@ -1,0 +1,37 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "extensions": [
+        "esbenp.prettier-vscode",
+        "IbrahimCesar.ibrahimcesar-nextjs-developer-pack",
+        "2gua.rainbow-brackets",
+        "aaron-bond.better-comments",
+        "BriteSnow.vscode-toggle-quotes",
+        "christian-kohler.path-intellisense",
+        "DavidAnson.vscode-markdownlint",
+        "dbaeumer.vscode-eslint",
+        "deque-systems.vscode-axe-linter",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "leodevbro.blockman",
+        "MariusAlchimavicius.json-to-ts",
+        "meganrogge.template-string-converter",
+        "mikestead.dotenv",
+        "ms-vscode.vscode-typescript-tslint-plugin",
+        "naumovs.color-highlight",
+        "oderwat.indent-rainbow",
+        "PKief.material-icon-theme",
+        "PulkitGangwar.nextjs-snippets",
+        "rangav.vscode-thunder-client",
+        "richie5um2.vscode-sort-json",
+        "shardulm94.trailing-spaces",
+        "shd101wyy.markdown-preview-enhanced",
+        "steoates.autoimport",
+        "WillLuke.nextjs",
+        "wix.vscode-import-cost"
+    ],
+    "features": {
+        "ghcr.io/devcontainers/features/sshd:1": {
+            "version": "latest"
+        }
+    }
+}
