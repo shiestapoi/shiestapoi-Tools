@@ -27,28 +27,9 @@ import makeWASocket, {
 import chalk from "chalk";
 import { smsg } from "./myFunc";
 
-const logFilePath = './temp/wa-logs.txt';
-
-// Pastikan direktori temp ada
-fs.mkdir(path.dirname(logFilePath), { recursive: true })
-  .then(() => {
-    // Baca file log jika ada
-    fs.access(logFilePath, fs.constants.F_OK)
-      .then(() => {
-        console.log('File log ada');
-      })
-      .catch(() => {
-        console.log('File log tidak ada, akan dibuat saat penyimpanan pertama');
-      });
-  })
-  .catch((err) => {
-    console.error('Gagal membuat direktori temp:', err);
-  });
-
 const logger = P(
-  { timestamp: () => `,"time":"${new Date().toJSON()}"` }
-);
-logger.level = "trace";
+  { timestamp: () => `,"time":"${new Date().toJSON()}"` });
+logger.level = "silent";
 const msgRetryCounterCache = new NodeCache();
 
 export const whatsappEmitter = new EventEmitter();
@@ -56,32 +37,15 @@ export const whatsappEmitter = new EventEmitter();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let sock: any;
 const store = makeInMemoryStore({ logger });
-const storeFilePath = "./temp/baileys_store_multi.json";
-
-// Pastikan direktori temp ada
-fs.mkdir(path.dirname(storeFilePath), { recursive: true })
-  .then(() => {
-    // Baca file store jika ada
-    fs.access(storeFilePath, fs.constants.F_OK)
-      .then(() => {
-        store?.readFromFile(storeFilePath);
-      })
-      .catch(() => {
-        console.log('File store tidak ada, akan dibuat saat penyimpanan pertama');
-      });
-
-    // Simpan setiap 10 detik
-    setInterval(() => {
-      store?.writeToFile(storeFilePath);
-    }, 10_000);
-  })
-  .catch((err) => {
-    console.error('Gagal membuat direktori temp:', err);
-  });
+store?.readFromFile("/tmp/baileys_store_multi.json");
+// save every 10s
+setInterval(() => {
+  store?.writeToFile("/tmp/baileys_store_multi.json");
+}, 10_000);
 
 async function deleteAuthInfo() {
   try {
-    await fs.rm(path.join(process.cwd(), "auth_info"), {
+    await fs.rm(path.join(process.cwd(), "/tmp/auth_info"), {
       recursive: true,
       force: true,
     });
@@ -96,7 +60,7 @@ export async function connectToWhatsApp(): Promise<{
   newStatus?: string;
 }> {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { state, saveCreds } = await useMultiFileAuthState("auth_info");
+  const { state, saveCreds } = await useMultiFileAuthState("/tmp/auth_info");
   const { version, isLatest } = await fetchLatestBaileysVersion();
 
   whatsappEmitter.emit(
@@ -130,7 +94,6 @@ export async function connectToWhatsApp(): Promise<{
           resolve({ qr: qrCode });
         }
         if (connection === "close") {
-          // Reconnect jika tidak logged out
           if (
             (lastDisconnect?.error as Boom)?.output?.statusCode !==
             DisconnectReason.loggedOut
@@ -484,33 +447,6 @@ export async function connectToWhatsApp(): Promise<{
   });
 }
 
-// export async function toggleBackup(
-//   chatId: string
-// ): Promise<{ status: string }> {
-//   const chat = await prisma.chat.findFirst({
-//     where: { chatId },
-//   });
-//   if (chat) {
-//     await prisma.chat.update({
-//       where: { id: chat.id },
-//       data: { backup: !chat.backup },
-//     });
-//   } else {
-//     await prisma.chat.create({
-//       data: {
-//         chatId: chatId,
-//         nameContact: chatId,
-//         backup: true,
-//         message: "",
-//         pesanPrivate: true,
-//         timestamp: new Date(),
-//         messageType: "text",
-//       },
-//     });
-//   }
-//   return { status: "Status backup diubah" };
-// }
-
 async function getMessage(
   key: WAMessageKey
 ): Promise<WAMessageContent | undefined> {
@@ -524,9 +460,9 @@ async function getMessage(
 }
 
 export function getSocket(): WASocket | null {
-  console.log("Current sock state:", sock);
+  console.log("Status socket saat ini:", sock);
   if (sock === null) {
-    console.log("Socket is null. Attempting to reconnect...");
+    console.log("Socket null. Mencoba menghubungkan kembali...");
     connectToWhatsApp();
   }
   return sock;

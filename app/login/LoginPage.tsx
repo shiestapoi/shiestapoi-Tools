@@ -65,15 +65,8 @@ export default function LoginPage() {
             transition: Bounce,
           });
           if (response.jwtData) {
-            if (!response.expires) {
-              Cookies.set("userToken", response.jwtData);
-              router.push("/dashboard");
-            } else {
-              Cookies.set("userToken", response.jwtData, {
-                expires: response.expires,
-              });
-              router.push("/dashboard");
-            }
+            Cookies.set("userToken", response.jwtData);
+            router.push("/dashboard");
           }
         }
       } else {

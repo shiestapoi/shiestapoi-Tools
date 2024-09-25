@@ -26,38 +26,21 @@ export default async function LoginValidate(
 
       if (isPasswordCorrect) {
         // Passwords match, generate JWT
+        const expirationTime = rememberMe ? "7d" : "2h";
         const jwt = await new SignJWT({ data: { id: user.id } })
           .setProtectedHeader({ alg: "HS256" })
-          .setExpirationTime("2h")
+          .setExpirationTime(expirationTime)
           .sign(await generateKey(SECRET_KEY));
 
-        if (rememberMe) {
-          // Set a longer expiration time (e.g., 7 days)
-          const expirationDate = new Date();
-          expirationDate.setDate(expirationDate.getDate() + 7);
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { tokenLogin: jwt },
-          });
-          return {
-            success: true,
-            message: "Login Berhasil",
-            jwtData: jwt,
-            expires: expirationDate,
-          };
-        } else {
-          // Set a shorter expiration time (e.g., session)
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { tokenLogin: jwt },
-          });
-          return {
-            success: true,
-            message: "Login Berhasil",
-            jwtData: jwt,
-            expires: null,
-          };
-        }
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { tokenLogin: jwt },
+        });
+        return {
+          success: true,
+          message: "Login Berhasil",
+          jwtData: jwt,
+        };
       } else {
         return {
           success: false,

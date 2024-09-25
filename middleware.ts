@@ -10,30 +10,34 @@ export async function middleware(request: NextRequest) {
   const generateKey = async (secret: string): Promise<Uint8Array> => {
     return new TextEncoder().encode(secret);
   };
+
   if (token) {
     try {
-      const { payload } = (await jwtVerify(
+      const { payload } = await jwtVerify(
         token.value,
         await generateKey(SECRET_KEY)
-      )) as { payload: { data: { id: string } } };
-        if (token.value) {
-          if (path === "/login") {
-            return NextResponse.redirect(new URL("/dashboard", request.url));
-          }
-          const response = NextResponse.next();
-          response.headers.set("X-User-ID", payload.data.id as string);
-          return response;
-        } else {
-          if (path === "/login") {
-            return NextResponse.next();
-          } else if (path === "/") {
-            return NextResponse.next();
-          } else {
-            return NextResponse.redirect(new URL("/login", request.url));
-          }
+      ) as { payload: { data: { id: string } } };
+      
+      // Jika token valid dan belum kedaluwarsa
+      if (token.value) {
+        if (path === "/login") {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
         }
-    } catch (error) {
-      console.error("Kesalahan verifikasi token:", error);
+        const response = NextResponse.next();
+        response.headers.set("X-User-ID", payload.data.id);
+        return response;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "JWTExpired") {
+        console.log("Token telah kedaluwarsa");
+        // Menghapus cookie token yang kedaluwarsa
+        const response = NextResponse.redirect(new URL("/login", request.url));
+        response.cookies.delete("userToken"); // Hapus cookie yang sudah expired
+        return response;
+      } else {
+        console.error("Kesalahan verifikasi token:", error);
+        return NextResponse.redirect(new URL("/login", request.url)); // Jika token tidak valid
+      }
     }
   }
 
@@ -43,6 +47,7 @@ export async function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
+
 
 export const config = {
   matcher: "/((?!api|_next/static|_next/image|favicon.ico).*)",

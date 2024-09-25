@@ -19,6 +19,7 @@ import getDetailUser from "@/components/dashboard/getDetailUser";
 import logoutUser from "@/components/dashboard/logout";
 import Cookies from "js-cookie";
 import { User } from "@prisma/client";
+import Chat from "./Chat";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -252,7 +253,7 @@ export default function DashboardPage() {
                       className="block py-2 px-3 text-black dark:text-white rounded md:bg-transparent md:p-0 dark:md:text-blue-500 md:text-violet-600"
                       aria-current="page"
                     >
-                      Home
+                      Chat
                     </Link>
                   </li>
                   <li>
@@ -293,17 +294,7 @@ export default function DashboardPage() {
           </div>
         </nav>
         <main>
-          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-4 py-6 sm:px-0">
-              <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-500 text-xl">
-                    Konten Dashboard Anda di sini
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Chat />
         </main>
       </div>
     </>

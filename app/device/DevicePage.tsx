@@ -1,10 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import {
-  whatsappEmitter,
-  initializeWhatsAppClient,
-} from "@/lib/whatsappClient";
 
 export default function DevicePage() {
   const [error, setError] = useState<string | null>(null);
@@ -18,10 +14,8 @@ export default function DevicePage() {
   useEffect(() => {
     if (effectRan.current === false) {
       try {
-        initializeWhatsAppClient();
-
         const eventSource = new EventSource("/api/whatsapp/events");
-
+        console.log(eventSource); 
         eventSource.addEventListener("connectionStatus", (event) => {
           const data = JSON.parse(event.data);
           setStatus(data.status);
@@ -47,7 +41,7 @@ export default function DevicePage() {
 
         eventSource.addEventListener("message", (event) => {
           const message = JSON.parse(event.data);
-          whatsappEmitter.emit("newMessage", message);
+          console.log(message);
         });
 
         return () => {
@@ -81,7 +75,7 @@ export default function DevicePage() {
             <p>Terjadi kesalahan saat mengambil kode QR.</p>
             <p>Silakan coba lagi setelah membuka aplikasi WhatsApp Anda.</p>
           </div>
-        ) : status === "open" ? (
+        ) : status === "open" || (numberPhoneConnection && numberPhoneConnection.length > 0) ? (
           <div className="text-green-500 font-semibold mt-10 mb-10">
             Terhubung dengan nomor WhatsApp: {numberPhoneConnection}
           </div>
@@ -118,7 +112,7 @@ export default function DevicePage() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            Memuat Kode QR...
+            Loading ...
           </div>
         )}
         <div className="text-center">
